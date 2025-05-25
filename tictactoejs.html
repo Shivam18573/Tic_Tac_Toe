@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tic Tac Toe - Game Web Version</title>
+  <style>
+    body {
+      background-color: #1e1e1e;
+      font-family: 'Consolas', monospace;
+      color: #ffffff;
+      text-align: center;
+    }
+    h1 {
+      color: #e2b80f;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 10px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 48px;
+      font-weight: bold;
+      color: #0b73c8;
+      background-color: #343434;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .cell.winner {
+      background-color: #646464;
+      color: #e2b80f;
+    }
+    #restart {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 18px;
+      background-color: #343434;
+      color: #ffffff;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1 id="status">X's Turn</h1>
+  <div class="board" id="board"></div>
+  <button id="restart">Restart</button>
+
+  <script>
+    const board = document.getElementById('board');
+    const status = document.getElementById('status');
+    const restartBtn = document.getElementById('restart');
+
+    let currPlayer = 'X';
+    let cells = [];
+    let gameOver = false;
+    let moves = 0;
+
+    function createBoard() {
+      board.innerHTML = '';
+      cells = [];
+      for (let i = 0; i < 9; i++) {
+        const btn = document.createElement('button');
+        btn.classList.add('cell');
+        btn.addEventListener('click', () => handleClick(i));
+        board.appendChild(btn);
+        cells.push(btn);
+      }
+      status.textContent = `${currPlayer}'s Turn`;
+      gameOver = false;
+      moves = 0;
+    }
+
+    function handleClick(i) {
+      if (gameOver || cells[i].textContent !== '') return;
+      cells[i].textContent = currPlayer;
+      moves++;
+      if (checkWinner()) {
+        status.textContent = `${currPlayer} Wins!`;
+        gameOver = true;
+      } else if (moves === 9) {
+        status.textContent = 'Tie!';
+        gameOver = true;
+      } else {
+        currPlayer = currPlayer === 'X' ? 'O' : 'X';
+        status.textContent = `${currPlayer}'s Turn`;
+      }
+    }
+
+    function checkWinner() {
+      const winPatterns = [
+        [0,1,2], [3,4,5], [6,7,8],
+        [0,3,6], [1,4,7], [2,5,8],
+        [0,4,8], [2,4,6]
+      ];
+      for (const pattern of winPatterns) {
+        const [a, b, c] = pattern;
+        if (
+          cells[a].textContent &&
+          cells[a].textContent === cells[b].textContent &&
+          cells[a].textContent === cells[c].textContent
+        ) {
+          cells[a].classList.add('winner');
+          cells[b].classList.add('winner');
+          cells[c].classList.add('winner');
+          return true;
+        }
+      }
+      return false;
+    }
+
+    restartBtn.addEventListener('click', () => {
+      currPlayer = 'X';
+      createBoard();
+    });
+
+    createBoard();
+  </script>
+</body>
+</html>
